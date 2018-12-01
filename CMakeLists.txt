@@ -3,4 +3,4 @@ project(Metaprogramming)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Metaprogramming main.cpp)
+add_executable(Metaprogramming GenerationHierarchy.cpp typelists.h)
