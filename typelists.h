@@ -5,23 +5,27 @@
 
 class NullType {};
 
-template <typename T = NullType, typename ... U>
-struct TypeList {
-    using head = T;
-    using tail = TypeList <U ...>;
-};
+template <typename...>
+class TypeList;
 
-template <typename T>
-struct TypeList<T> {
-    using head = T;
+template <>
+class TypeList<> {
+public:
+    using head = NullType;
     using tail = NullType;
 };
 
+template <typename T, typename... U>
+class TypeList<T, U...> {
+public:
+    using head = T;
+    using tail = TypeList<U...>;
+};
 
 //Length
 template <typename TypeList>
 struct Length {
-    enum {value = std::is_same<typename TypeList::head, NullType>::value ? 0 : Length<typename TypeList::tail>::value + 1};
+    enum {value = Length<typename TypeList::tail>::value + 1};
 };
 
 template <>
@@ -29,6 +33,10 @@ struct Length <NullType> {
     enum {value = 0};
 };
 
+template <>
+struct Length <TypeList<> > {
+    enum {value = 0};
+};
 
 //At
 template <unsigned int N, typename TypeList>
@@ -102,17 +110,49 @@ struct Erase <T, TypeList <Args...> > {
     using Result = typename Append <typename TypeList<Args...>::head, typename Erase <T, typename TypeList <Args...>::tail >::Result >::Result ;
 };
 
-int main() {
+
+//Добавляем один TypeList в другой, но как элемент
+template<typename T, typename TL>
+struct Add {
+};
+
+template<typename T, typename ...Args>
+struct Add<T, TypeList<Args...> > {
+    using Result = TypeList<Args..., T>;
+};
+
+
+// Разворачиваем TypeList
+template <class TList>
+struct ReverseTypeList {
+};
+
+template <>
+struct ReverseTypeList<TypeList<> > {
+    using Result = TypeList<>;
+};
+
+template <class T1, class... T2>
+struct ReverseTypeList<TypeList<T1, T2...> > {
+    using Result = typename Append<typename ReverseTypeList<TypeList<T2...> >::Result, TypeList<T1> >::Result;
+};
+
+/*int main() {
     using list = TypeList <int, char, double>;
     using emptyList = TypeList<>;
     std::cout << Length<list>::value << " " << Length<emptyList>::value << std::endl;
     std::cout << std::is_same<TypeAt <0, list>::Result, int>::value << std::endl;
     std::cout << IndexOf <double, list>::value << std::endl;
-    using newList = Append <int, list>::Result;
+    using newList = Append <int, TypeList<int> >::Result;
     std::cout << Length<newList>::value << std::endl;
     std::cout << std::is_same<TypeAt<3, newList>::Result, int>::value << std::endl;
+
+    using ll = Add <list, TypeList<> >::Result;
+    using ll2 = Add <list, ll>::Result;
+    std::cout << "kek " << Length <ll2>::value << std::endl;
+
     using listAfterErase = Erase <char, list>::Result;
     std::cout << Length <listAfterErase>::value << std::endl;
     std::cout << std::is_same<TypeAt <0, listAfterErase>::Result, int>::value << " " << std::is_same<TypeAt <1, listAfterErase>::Result, double>::value << std::endl;
     return 0;
-}
+}*/
