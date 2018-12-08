@@ -24,12 +24,12 @@ struct Fibonacci<1> {
 template <class TList, template <class> class Unit>
 struct GenScatterHierarchy;
 
-template <class T1, class T2, template <class> class Unit>
-struct GenScatterHierarchy<TypeList<T1, T2>, Unit>: public GenScatterHierarchy<T1, Unit>, public GenScatterHierarchy<T2, Unit> {
+template <class T1, class... T2, template <class> class Unit>
+struct GenScatterHierarchy<TypeList<T1, T2...>, Unit>: public GenScatterHierarchy<T1, Unit>, public GenScatterHierarchy<TypeList<T2...>, Unit> {
 public:
-    using TList = TypeList<T1, T2>;
+    using TList = TypeList<T1, T2...>;
     using LeftBase = GenScatterHierarchy<T1, Unit>;
-    using RightBase = GenScatterHierarchy<T2, Unit>;
+    using RightBase = GenScatterHierarchy<TypeList<T2...>, Unit>;
 };
 
 template <class AtomicType, template <class> class Unit>
@@ -46,11 +46,11 @@ struct GenScatterHierarchy<NullType, Unit> {};
 template <class TList, template <class AtomicType, class Base> class Unit, class Root = NullType>
 class GenLinearHierarchy;
 
-template <class T1, class T2, template <class, class> class Unit, class Root>
-class GenLinearHierarchy<TypeList<T1, T2>, Unit, Root>: public Unit<T1, GenLinearHierarchy<TypeList<T2>, Unit, Root> > {
+template <class T1, class... T2, template <class, class> class Unit, class Root>
+class GenLinearHierarchy<TypeList<T1, T2...>, Unit, Root>: public Unit<T1, GenLinearHierarchy<TypeList<T2...>, Unit, Root> > {
 public:
-    using ChildBase = Unit<T1, GenLinearHierarchy<T2, Unit, Root> >;
-    using Child = GenLinearHierarchy<T2, Unit, Root>;
+    using ChildBase = Unit<T1, GenLinearHierarchy<TypeList<T2...>, Unit, Root> >;
+    using Child = GenLinearHierarchy<TypeList<T2...>, Unit, Root>;
 };
 
 template <class T, template <class, class> class Unit, class Root>
@@ -143,7 +143,6 @@ int main() {
     std::cout << Length<fibonacciList>::value << std::endl;
     //using l = TypeAt<1, fibonacciList>::Result;
     //using ll = Length<l>::value;
-
     using Hierarchy = GenFibonacciHierarchy <Holder, EventHandler, NullType, typeList>;
     Hierarchy hierarchy;
     return 0;
