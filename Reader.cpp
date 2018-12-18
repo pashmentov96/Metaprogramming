@@ -15,7 +15,6 @@ private:
     using Next = LineReader<TypeList<T2...> >;
 public:
     T1 elem;
-    enum {size = sizeof(T1) + Next::size};
 
     void read(void * ptr, std::fstream &in) {
         in >> elem;
@@ -29,7 +28,6 @@ public:
 template<>
 class LineReader <TypeList<> > {
 public:
-    enum {size = 0};
 
     void read(void * ptr, std::fstream &in) {
 
@@ -50,8 +48,6 @@ private:
 
 public:
 
-    enum {result = 0};
-
     Reader() {
         in.open("input.txt", std::fstream::in);
     }
@@ -69,13 +65,6 @@ public:
         in.close();
     }
 };
-
-template <class T>
-void add(void * &ptr, T elem) {
-    T * new_ptr = static_cast<T*>(ptr);
-    *new_ptr = elem;
-    ptr = new_ptr + 1;
-}
 
 int main() {
 
