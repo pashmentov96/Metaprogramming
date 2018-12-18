@@ -137,6 +137,23 @@ struct ReverseTypeList<TypeList<T1, T2...> > {
     using Result = typename Append<typename ReverseTypeList<TypeList<T2...> >::Result, TypeList<T1> >::Result;
 };
 
+template <class TList>
+class sizeOf;
+
+template <class T1, class... T2>
+class sizeOf <TypeList<T1, T2...> > {
+private:
+    using tail = sizeOf<TypeList<T2...> >;
+public:
+    enum {value = sizeof(T1) + tail::value};
+};
+
+template <>
+class sizeOf <TypeList<> > {
+public:
+    enum {value = 0};
+};
+
 /*int main() {
     using list = TypeList <int, char, double>;
     using emptyList = TypeList<>;
