@@ -3,4 +3,4 @@ project(Metaprogramming)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Metaprogramming typelists.h "bonus tasks/access_to_members.cpp")
+add_executable(Metaprogramming typelists.h Reader.cpp)
